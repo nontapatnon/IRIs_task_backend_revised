@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.middleware.csrf import get_token
 from .models import TaskRequest, Department, TaskType, IRIsTeam, DesignStage
 from .serializers import TaskRequestSerializer
 from .serializers import TaskTypeSerializer
@@ -37,7 +38,7 @@ def get_dropdown_options(request):
     })
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])  # Temporarily allow anonymous access for testing
 def get_inprogress_tasks(request):
     tasks = TaskRequest.objects.filter(
         status__in=["In Progress", "Pending Approval", "Waiting for Approval", "Complete"]
@@ -47,7 +48,7 @@ def get_inprogress_tasks(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])  # Temporarily allow anonymous access for testing
 def get_all_tasks(request):
     # if not request.user.is_staff:
     #     return Response({"error": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
@@ -86,7 +87,7 @@ def update_task_request(request, pk):
 
     updated_data = request.data.copy()
 
-    # ✅ Automatically update status if start_date is set and still pending
+    # Automatically update status if start_date is set and still pending
     if updated_data.get("start_date") and task.status in ["Pending", "Pending Approval"]:
         updated_data["status"] = "In Progress"
 
@@ -110,6 +111,17 @@ def delete_task_request(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         return Response({"error": "You do not have permission to delete this task."}, status=status.HTTP_403_FORBIDDEN)
+
+@ensure_csrf_cookie
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_csrf_token(request):
+    """
+    Endpoint to get CSRF token for frontend
+    """
+    return Response({
+        'csrfToken': get_token(request)
+    })
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

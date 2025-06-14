@@ -134,12 +134,35 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
+# Allow additional headers for better compatibility
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_EXPOSE_HEADERS = [
+    'x-csrftoken',
+]
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
-CSRF_COOKIE_HTTPONLY = False  # ✅ Allows frontend JS to access token
+CSRF_COOKIE_HTTPONLY = False  # Allows frontend JS to access token
+CSRF_COOKIE_SAMESITE = 'Lax'  # Better security while allowing cross-origin
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+
+# Session settings for better compatibility
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 
 # Enable session-based authentication
 REST_FRAMEWORK = {
@@ -152,4 +175,3 @@ REST_FRAMEWORK = {
 }
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
