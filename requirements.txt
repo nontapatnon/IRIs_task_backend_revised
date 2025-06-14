@@ -4,5 +4,6 @@ django-cors-headers==4.3.1
 djangorestframework==3.14.0
 sqlparse==0.4.4
 tzdata==2023.3
+psycopg2-binary==2.9.9
 
 # pip install -m .\requirements.txt
