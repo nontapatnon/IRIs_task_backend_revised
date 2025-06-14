@@ -72,10 +72,20 @@ cd your-repository-name
 
 ```bash
 # Make setup script executable
-chmod +x IRIs_task_backend_revised/setup_postgres_ec2.sh
+chmod +x IRIs_task_backend_revised/setup_postgres_ec2_fixed.sh
 
-# Run PostgreSQL setup
-./IRIs_task_backend_revised/setup_postgres_ec2.sh
+# Run PostgreSQL setup (use the fixed version)
+./IRIs_task_backend_revised/setup_postgres_ec2_fixed.sh
+```
+
+**If the script encounters password issues, run these manual commands:**
+```bash
+# Create database and user manually
+sudo -u postgres createdb iris_db
+sudo -u postgres createuser iris_user
+sudo -u postgres psql -c "ALTER USER iris_user WITH PASSWORD 'iris_password';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE iris_db TO iris_user;"
+sudo -u postgres psql -c "ALTER USER iris_user CREATEDB;"
 ```
 
 This script will:
