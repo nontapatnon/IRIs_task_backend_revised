@@ -141,6 +141,8 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://43.208.3.58",
+    "https://iris-task.web.app"
 ]
 
 # Allow additional headers for better compatibility
@@ -163,14 +165,16 @@ CORS_EXPOSE_HEADERS = [
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://43.208.3.58",
+    "https://iris-task.web.app"
 ]
 
 CSRF_COOKIE_HTTPONLY = False  # Allows frontend JS to access token
-CSRF_COOKIE_SAMESITE = 'Lax'  # Better security while allowing cross-origin
+CSRF_COOKIE_SAMESITE = None #'Lax'  # Better security while allowing cross-origin
 CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
 
 # Session settings for better compatibility
-SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = None # 'Lax'
 SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 
 # Enable session-based authentication
