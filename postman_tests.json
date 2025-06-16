@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "IRIS Task Management API Tests",
+    "description": "Test collection for IRIS Task Management System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Get CSRF Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/csrf-token/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "csrf-token", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get Dropdown Options",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/dropdown-options/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "dropdown-options", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. Submit Task Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-CSRFToken",
+            "value": "{{csrf_token}}",
+            "description": "Get this from the CSRF token endpoint"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"project_name\": \"Test Project from Postman\",\n  \"requester_name\": \"Test User\",\n  \"requester_email\": \"test@example.com\",\n  \"project_manager_email\": \"pm@example.com\",\n  \"department\": \"Architecture\",\n  \"design_stage\": \"Concept Design\",\n  \"preferred_team\": \"BIM\",\n  \"task_type\": \"Building Analysis\",\n  \"task\": \"Test task from Postman\",\n  \"task_description\": \"This is a test task created via Postman API\",\n  \"preferred_due_date\": \"2025-07-01\",\n  \"status\": \"Pending Approval\"\n}"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/task-request/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "task-request", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Get All Tasks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/all-tasks/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "all-tasks", ""]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get In Progress Tasks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/inprogress-tasks/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["api", "inprogress-tasks", ""]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
+    },
+    {
+      "key": "csrf_token",
+      "value": "",
+      "description": "CSRF token from the csrf-token endpoint"
+    }
+  ]
+}

@@ -190,11 +190,19 @@ After=network.target
 [Service]
 User=ec2-user
 Group=ec2-user
-WorkingDirectory=/home/ec2-user/IRIs_task_backend_revised
-ExecStart=/home/ec2-user/IRIs_task_backend_revised/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ec2-user/IRIs_task_backend_revised/irisbackend.sock irisbackend.wsgi:application
+WorkingDirectory=/home/ec2-user/deploy/IRIs_task_backend_revised
+ExecStart=/home/ec2-user/deploy/IRIs_task_backend_revised/venv/bin/gunicorn \
+          --workers 3 \
+          --bind unix:/home/ec2-user/deploy/IRIs_task_backend_revised/gunicorn.sock \
+          irisbackend.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
+```
+**Allow "others" to traverse /home/ec2-user**
+
+```bash
+chmod o+x /home/ec2-user
 ```
 
 **Start Gunicorn Service:**
@@ -207,10 +215,12 @@ sudo systemctl status gunicorn
 ### Setup Nginx (Reverse Proxy)
 ```bash
 # Install Nginx
-sudo yum install -y nginx
+# sudo yum install -y nginx
+sudo amazon-linux-extras install nginx1 -y
 
 # Create Nginx configuration
 sudo nano /etc/nginx/conf.d/iris-task.conf
+
 ```
 
 **Nginx Configuration:**
@@ -230,11 +240,45 @@ server {
         proxy_pass http://unix:/home/ec2-user/IRIs_task_backend_revised/irisbackend.sock;
         
         # CORS headers for Firebase frontend
+        # add_header 'Access-Control-Allow-Origin' 'https://iris-task.web.app' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, Origin, User-Agent, X-Requested-With, X-CSRFToken' always;
+        # add_header 'Access-Control-Allow-Credentials' 'true' always;
+        
+        if ($request_method = 'OPTIONS') {
+            return 204;
+        }
+    }
+}
+```
+
+**Nginx Config (for use with API Gateway)**
+```
+server {
+    listen 80;
+    server_name _;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root /home/ec2-user/deploy/IRIs_task_backend_revised;
+    }
+
+    location / {
+        proxy_pass http://unix:/home/ec2-user/deploy/IRIs_task_backend_revised/gunicorn.sock;
+
+        # Proxy headers
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # CORS headers for Firebase frontend
         add_header 'Access-Control-Allow-Origin' 'https://iris-task.web.app' always;
         add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
         add_header 'Access-Control-Allow-Headers' 'Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, Origin, User-Agent, X-Requested-With, X-CSRFToken' always;
         add_header 'Access-Control-Allow-Credentials' 'true' always;
-        
+
         if ($request_method = 'OPTIONS') {
             return 204;
         }
@@ -247,6 +291,9 @@ server {
 sudo systemctl start nginx
 sudo systemctl enable nginx
 sudo systemctl status nginx
+
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
 ### Setup HTTPS with Let's Encrypt
@@ -303,6 +350,7 @@ server {
     }
 }
 ```
+
 
 ### Update Django Settings for Production
 ```python
