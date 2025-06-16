@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_!e!fpbpdrfb1dhlxprl!q$)!3^5^o@_th0r_06^1i0piaw)fn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['43.208.3.58']
+ALLOWED_HOSTS = ['43.208.3.58', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -129,11 +129,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'tasks/static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
 # CORS & CSRF
 CORS_ALLOW_ALL_ORIGINS = False
@@ -169,13 +172,15 @@ CSRF_TRUSTED_ORIGINS = [
     "https://iris-task.web.app"
 ]
 
-CSRF_COOKIE_HTTPONLY = False  # Allows frontend JS to access token
-CSRF_COOKIE_SAMESITE = None #'Lax'  # Better security while allowing cross-origin
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+# Add CSRF cookie settings for better frontend integration
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_USE_SESSIONS = False
 
 # Session settings for better compatibility
-SESSION_COOKIE_SAMESITE = None # 'Lax'
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = True  # Set to True in production with HTTPS
 
 # Enable session-based authentication
 REST_FRAMEWORK = {
@@ -186,11 +191,3 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
-
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
-STATIC_URL = '/staticfiles/'
-# STATICFILES_DIRS = [BASE_DIR / 'staticfiles']
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
